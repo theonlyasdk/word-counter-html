@@ -3,27 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Counter</title>
+    <title>Text Metrics</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
     <style>
-    html, body { height: 100%; }
-    .padding-sm { padding: 2em; }
-    .title { font-family: "Rubik Mono One", monospace; font-weight: 400; }
-    .textarea { max-height: 1000em !important; height: 100%; font-family: "IBM Plex Mono", monospace; font-weight: 400; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    .padding-sm { padding: 1em; }
+    .title { font-family: "Rubik Mono One", monospace; font-weight: 400; font-size: 1.5rem; }
+    .textarea { width: 100%; height: 60vh; font-family: "IBM Plex Mono", monospace; font-weight: 400; resize: none; }
     .content { display: flex; flex-direction: column; height: 100%; }
+    .metrics { margin-top: 1em; font-family: "IBM Plex Mono", monospace; }
+    .metrics p { margin: 0.5em 0; }
     </style>
 </head>
 <body>
     <div class="padding-sm content">
-        <h1 class="title is-1" id="word-count">How many words?</h1>
-        <textarea class="textarea" placeholder="Paste your text here..." id="pasted-text" oninput="count_words(this)"></textarea>
+        <h1 class="title is-1" id="word-count">0 words</h1>
+        <textarea class="textarea" placeholder="Paste your text here..." id="pasted-text" oninput="count_metrics(this)"></textarea>
+        <div class="metrics" id="metrics">
+            <p>Characters: 0</p>
+            <p>Punctuation: 0</p>
+            <p>Emojis: 0</p>
+        </div>
     </div>
     <script>
-    function count_words(element) {
+    function count_metrics(element) {
+        let text = element.value;
         let word_count_elm = document.getElementById("word-count");
-        let text = element.value.replace(/[^\w]|_/g, "");
-        let words = text.match(/([A-Z]?[a-z]+)|(\d+)/g) || [];
-        word_count_elm.innerHTML = `${words.length} words.`;
+        let metrics_elm = document.getElementById("metrics");
+
+        let cleaned_text = text.replace(/[^\p{L}\p{N}\s]/gu, " ").replace(/\s+/g, " ").trim();
+        let words = cleaned_text.split(" ").filter(word => word.length > 0 && /[\p{L}\p{N}]/u.test(word));
+        let word_count = words.length;
+
+        let char_count = text.length;
+
+        let punctuation_count = (text.match(/[^\p{L}\p{N}\s]/gu) || []).length;
+
+        let emoji_count = (text.match(/\p{Emoji}/gu) || []).length;
+
+        word_count_elm.innerHTML = `${word_count} word${word_count !== 1 ? 's' : ''}`;
+        metrics_elm.innerHTML = `
+            <p>Characters: ${char_count}</p>
+            <p>Punctuation: ${punctuation_count}</p>
+            <p>Emojis: ${emoji_count}</p>
+        `;
     }
     </script>
 </body>
