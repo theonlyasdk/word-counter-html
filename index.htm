@@ -6,56 +6,25 @@
     <title>Word Counter</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.1/css/bulma.min.css">
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Rubik+Mono+One&display=swap');
-    html, body {
-        height: 100%;
-    }
-    .padding-sm {
-        padding: 2em;
-    }
-    .title {
-        font-family: "Rubik Mono One", monospace;
-        font-weight: 400;
-        font-style: normal;
-    }
-    .textarea {
-        /* Remove max-height limitation from Bulma CSS */
-        max-height: 1000em !important;
-        height: 100%;
-        font-family: "IBM Plex Mono", monospace;
-        font-weight: 400;
-        font-style: normal;
-    }
-    .content {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-    }
+    html, body { height: 100%; }
+    .padding-sm { padding: 2em; }
+    .title { font-family: "Rubik Mono One", monospace; font-weight: 400; }
+    .textarea { max-height: 1000em !important; height: 100%; font-family: "IBM Plex Mono", monospace; font-weight: 400; }
+    .content { display: flex; flex-direction: column; height: 100%; }
     </style>
 </head>
 <body>
     <div class="padding-sm content">
         <h1 class="title is-1" id="word-count">How many words?</h1>
-        <textarea 
-            class="textarea" 
-            placeholder="Paste your text here..." 
-            id="pasted-text" 
-            onkeydown="count_words(this)" 
-            onpaste="count_words(this)" 
-            onfocus="count_words(this)" 
-            onblur="count_words(this)"
-        ></textarea>
+        <textarea class="textarea" placeholder="Paste your text here..." id="pasted-text" oninput="count_words(this)"></textarea>
     </div>
+    <script>
+    function count_words(element) {
+        let word_count_elm = document.getElementById("word-count");
+        let text = element.value.replace(/[^\w]|_/g, "");
+        let words = text.match(/([A-Z]?[a-z]+)|(\d+)/g) || [];
+        word_count_elm.innerHTML = `${words.length} words.`;
+    }
+    </script>
 </body>
-<script>
-// https://stackoverflow.com/a/18679657
-function count_words(element) {
-    let word_count_elm = document.getElementById("word-count");
-    let actual_count = element.value.split(' ')
-        .filter(function(n) { return n != '' })
-        .length;
-    if (element.value == "") actual_count = 0;
-    word_count_elm.innerHTML = `${actual_count} words.`;
-}
-</script>
 </html>
